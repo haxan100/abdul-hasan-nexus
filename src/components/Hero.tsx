@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import { ArrowRight, Code2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { ProjectModal } from "./ProjectModal";
 
 const projects = [
-  { id: 1, title: "E-Commerce Platform", tech: "Laravel + Vue.js" },
-  { id: 2, title: "API Integration Hub", tech: "Node.js + Redis" },
-  { id: 3, title: "Automation System", tech: "PHP + RabbitMQ" },
-  { id: 4, title: "CMS Dashboard", tech: "React + MySQL" },
-  { id: 5, title: "Payment Gateway", tech: "CodeIgniter" },
-  { id: 6, title: "Real-time Chat", tech: "WebSocket + Redis" },
-  { id: 7, title: "Analytics Dashboard", tech: "React + PostgreSQL" },
-  { id: 8, title: "Microservices API", tech: "Node.js + Docker" },
-  { id: 9, title: "Inventory System", tech: "Laravel + MySQL" },
+  { id: 1, title: "E-Commerce Platform", tech: "Laravel + Vue.js", image: "/placeholder.svg", description: "Full-featured e-commerce platform with payment integration and admin dashboard." },
+  { id: 2, title: "API Integration Hub", tech: "Node.js + Redis", image: "/placeholder.svg", description: "Centralized API management system with caching and rate limiting." },
+  { id: 3, title: "Automation System", tech: "PHP + RabbitMQ", image: "/placeholder.svg", description: "Automated workflow system for business process optimization." },
+  { id: 4, title: "CMS Dashboard", tech: "React + MySQL", image: "/placeholder.svg", description: "Content management system with real-time editing capabilities." },
+  { id: 5, title: "Payment Gateway", tech: "CodeIgniter", image: "/placeholder.svg", description: "Secure payment processing system with multiple gateway support." },
+  { id: 6, title: "Real-time Chat", tech: "WebSocket + Redis", image: "/placeholder.svg", description: "Real-time messaging application with file sharing and group chat." },
+  { id: 7, title: "Analytics Dashboard", tech: "React + PostgreSQL", image: "/placeholder.svg", description: "Data visualization dashboard with interactive charts and reports." },
+  { id: 8, title: "Microservices API", tech: "Node.js + Docker", image: "/placeholder.svg", description: "Scalable microservices architecture with containerized deployment." },
+  { id: 9, title: "Inventory System", tech: "Laravel + MySQL", image: "/placeholder.svg", description: "Inventory management system with barcode scanning and reporting." },
 ];
 
 export function Hero() {
   const [mounted, setMounted] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -36,37 +39,41 @@ export function Hero() {
       <div className="container px-4 z-10">
         <div className="flex flex-col items-center text-center">
           {/* Orbit Container */}
-          <div className="relative w-full max-w-2xl aspect-square mb-8">
-            {/* Center Avatar */}
+          <div className="relative w-full max-w-4xl aspect-square mb-8 mx-auto">
+            {/* Center Profile Image */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
               <div className="relative">
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-secondary p-1 animate-glow">
-                  <div className="w-full h-full rounded-full bg-card flex items-center justify-center">
-                    <Code2 className="w-16 h-16 text-primary" />
-                  </div>
+                <div className="w-48 h-48 rounded-full bg-white p-1 shadow-2xl">
+                  <img 
+                    src="https://media.licdn.com/dms/image/v2/D5603AQEENpdwjOLNwA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1711003767182?e=1764806400&v=beta&t=sC2bnFpcX0w-hNksIZflUz956WsAkCfwwdM8pQd8A3w"
+                    alt="Abdul Hasan Profile"
+                    className="w-full h-full rounded-full object-cover border-2 border-gray-200 shadow-xl"
+                  />
                 </div>
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-secondary blur-xl opacity-50" />
               </div>
             </div>
 
-            {/* Orbiting Projects */}
+            {/* Orbiting Projects - Fixed Distance */}
             {mounted && projects.map((project, index) => (
               <div
                 key={project.id}
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                 style={{
-                  animation: `orbit ${20 + index * 2}s linear infinite`,
-                  animationDelay: `${-index * 4}s`,
+                  animation: `orbit-fixed ${30 + index * 5}s linear infinite`,
+                  animationDelay: `${-index * 5}s`,
                 }}
               >
                 <button
-                  onClick={() => scrollToSection('portfolio')}
-                  className="glassmorphism px-4 py-2 rounded-lg hover:glow-cyan transition-all duration-300 hover:scale-110 group cursor-pointer"
+                  onClick={() => {
+                    setSelectedProject(project);
+                    setIsModalOpen(true);
+                  }}
+                  className="glassmorphism px-3 py-2 rounded-xl hover:glow-cyan transition-all duration-300 hover:scale-110 group cursor-pointer shadow-lg border-2 border-primary/20 hover:border-primary/50"
                 >
-                  <div className="text-xs font-orbitron font-bold text-primary group-hover:text-secondary transition-colors">
+                  <div className="text-sm font-orbitron font-bold text-primary group-hover:text-secondary transition-colors">
                     {project.title}
                   </div>
-                  <div className="text-[10px] text-muted-foreground">{project.tech}</div>
+                  <div className="text-xs text-muted-foreground group-hover:text-primary/80 transition-colors">{project.tech}</div>
                 </button>
               </div>
             ))}
@@ -108,6 +115,12 @@ export function Hero() {
           <div className="w-1 h-3 bg-primary rounded-full mt-2 animate-pulse" />
         </div>
       </div>
+      
+      <ProjectModal 
+        project={selectedProject}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </section>
   );
 }

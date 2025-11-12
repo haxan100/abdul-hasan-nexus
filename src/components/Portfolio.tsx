@@ -1,5 +1,8 @@
-import { ExternalLink, Code } from "lucide-react";
+import { ExternalLink, Code, Image, Eye } from "lucide-react";
 import { Button } from "./ui/button";
+import { ImageModal } from "./ImageModal";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const projects = [
   {
@@ -7,46 +10,77 @@ const projects = [
     title: "E-Commerce Platform",
     description: "Full-featured online store with payment gateway integration, inventory management, and real-time analytics",
     tech: ["Laravel", "Vue.js", "MySQL", "Redis"],
-    image: "e-commerce",
+    slug: "e-commerce-platform",
+    images: [
+      { url: "/placeholder.svg", caption: "Homepage with product showcase and search functionality" },
+      { url: "/placeholder.svg", caption: "Admin dashboard for inventory management" },
+      { url: "/placeholder.svg", caption: "Payment gateway integration with multiple providers" }
+    ],
   },
   {
     id: 2,
     title: "API Integration Hub",
     description: "Centralized API management system connecting multiple third-party services with rate limiting and caching",
     tech: ["Node.js", "Express", "Redis", "RabbitMQ"],
-    image: "api-hub",
+    slug: "api-integration-hub",
+    images: [
+      { url: "/placeholder.svg", caption: "API dashboard showing real-time metrics" },
+      { url: "/placeholder.svg", caption: "Rate limiting configuration panel" }
+    ],
   },
   {
     id: 3,
     title: "Business Automation System",
     description: "Automated workflow management for enterprise operations with custom rule engine and notifications",
     tech: ["PHP", "CodeIgniter", "MySQL", "RabbitMQ"],
-    image: "automation",
+    slug: "business-automation-system",
+    images: [
+      { url: "/placeholder.svg", caption: "Workflow designer with drag-and-drop interface" }
+    ],
   },
   {
     id: 4,
     title: "CMS Dashboard",
     description: "Content management system with real-time collaboration, version control, and multi-language support",
     tech: ["React", "Node.js", "MongoDB", "Socket.io"],
-    image: "cms",
+    slug: "cms-dashboard",
+    images: [
+      { url: "/placeholder.svg", caption: "Content editor with real-time preview" },
+      { url: "/placeholder.svg", caption: "Multi-language content management" }
+    ],
   },
   {
     id: 5,
     title: "Payment Gateway Integration",
     description: "Secure payment processing system with multiple gateway support and fraud detection",
     tech: ["CodeIgniter", "MySQL", "Stripe", "Midtrans"],
-    image: "payment",
+    slug: "payment-gateway-integration",
+    images: [
+      { url: "/placeholder.svg", caption: "Payment processing dashboard" }
+    ],
   },
   {
     id: 6,
     title: "Inventory Management",
     description: "Real-time inventory tracking with barcode scanning, alerts, and predictive analytics",
     tech: ["Laravel", "MySQL", "Redis", "Chart.js"],
-    image: "inventory",
+    slug: "inventory-management",
+    images: [
+      { url: "/placeholder.svg", caption: "Inventory overview with real-time stock levels" },
+      { url: "/placeholder.svg", caption: "Barcode scanning interface" }
+    ],
   },
 ];
 
 export function Portfolio() {
+  const [selectedImages, setSelectedImages] = useState<{ url: string; caption: string }[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openImageModal = (images: { url: string; caption: string }[]) => {
+    setSelectedImages(images);
+    setIsModalOpen(true);
+  };
+
   return (
     <section id="portfolio" className="min-h-screen flex items-center py-20 bg-gradient-to-b from-space-blue/20 to-background">
       <div className="container px-4">
@@ -93,27 +127,41 @@ export function Portfolio() {
                   ))}
                 </div>
 
-                <div className="flex gap-2 pt-2">
+                <div className="grid grid-cols-3 gap-2 pt-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 border-primary text-primary hover:bg-primary/10 group/btn"
+                    onClick={() => openImageModal(project.images)}
+                    className="border-primary text-primary hover:bg-primary/10 group/btn"
                   >
-                    <Code className="w-4 h-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
-                    View Code
+                    <Image className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
                   </Button>
+                  <Link to={`/project/${project.slug}`}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full border-secondary text-secondary hover:bg-secondary/10 group/btn"
+                    >
+                      <Eye className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
+                    </Button>
+                  </Link>
                   <Button
                     size="sm"
-                    className="flex-1 bg-gradient-to-r from-primary to-secondary hover:opacity-90 group/btn"
+                    className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 group/btn"
                   >
-                    <ExternalLink className="w-4 h-4 mr-2 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-                    Live Demo
+                    <ExternalLink className="w-4 h-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                   </Button>
                 </div>
               </div>
             </div>
           ))}
         </div>
+        
+        <ImageModal
+          images={selectedImages}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
       </div>
     </section>
   );

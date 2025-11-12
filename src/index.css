@@ -156,4 +156,9 @@ All colors MUST be HSL.
     from { transform: rotate(0deg) translateX(200px) rotate(0deg); }
     to { transform: rotate(360deg) translateX(200px) rotate(-360deg); }
   }
+  
+  @keyframes orbit-fixed {
+    from { transform: rotate(0deg) translateX(320px) rotate(0deg); }
+    to { transform: rotate(360deg) translateX(320px) rotate(-360deg); }
+  }
 }
