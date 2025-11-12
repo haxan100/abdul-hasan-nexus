@@ -8,13 +8,13 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="h-screen overflow-y-scroll snap-y snap-mandatory">
       <ThemeToggle />
-      <Hero />
-      <About />
-      <Portfolio />
-      <Experience />
-      <Contact />
+      <div className="snap-start"><Hero /></div>
+      <div className="snap-start"><About /></div>
+      <div className="snap-start"><Portfolio /></div>
+      <div className="snap-start"><Experience /></div>
+      <div className="snap-start"><Contact /></div>
       <Footer />
     </div>
   );
