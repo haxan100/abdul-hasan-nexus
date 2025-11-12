@@ -19,7 +19,7 @@ export function About() {
   }, []);
 
   return (
-    <section id="about" className="py-20 bg-gradient-to-b from-background to-space-blue/20">
+    <section id="about" className="min-h-screen flex items-center py-20 bg-gradient-to-b from-background to-space-blue/20">
       <div className="container px-4">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-orbitron font-bold text-center mb-4">

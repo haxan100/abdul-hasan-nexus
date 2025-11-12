@@ -3,11 +3,15 @@ import { Button } from "./ui/button";
 import { ArrowRight, Code2 } from "lucide-react";
 
 const projects = [
-  { id: 1, title: "E-Commerce Platform", tech: "Laravel + Vue.js", rotation: 0 },
-  { id: 2, title: "API Integration Hub", tech: "Node.js + Redis", rotation: 72 },
-  { id: 3, title: "Automation System", tech: "PHP + RabbitMQ", rotation: 144 },
-  { id: 4, title: "CMS Dashboard", tech: "React + MySQL", rotation: 216 },
-  { id: 5, title: "Payment Gateway", tech: "CodeIgniter", rotation: 288 },
+  { id: 1, title: "E-Commerce Platform", tech: "Laravel + Vue.js" },
+  { id: 2, title: "API Integration Hub", tech: "Node.js + Redis" },
+  { id: 3, title: "Automation System", tech: "PHP + RabbitMQ" },
+  { id: 4, title: "CMS Dashboard", tech: "React + MySQL" },
+  { id: 5, title: "Payment Gateway", tech: "CodeIgniter" },
+  { id: 6, title: "Real-time Chat", tech: "WebSocket + Redis" },
+  { id: 7, title: "Analytics Dashboard", tech: "React + PostgreSQL" },
+  { id: 8, title: "Microservices API", tech: "Node.js + Docker" },
+  { id: 9, title: "Inventory System", tech: "Laravel + MySQL" },
 ];
 
 export function Hero() {

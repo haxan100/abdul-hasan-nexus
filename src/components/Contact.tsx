@@ -26,7 +26,7 @@ export function Contact() {
   ];
 
   return (
-    <section id="contact" className="py-20 bg-gradient-to-b from-space-blue/20 to-background relative overflow-hidden">
+    <section id="contact" className="min-h-screen flex items-center py-20 bg-gradient-to-b from-space-blue/20 to-background relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse" />

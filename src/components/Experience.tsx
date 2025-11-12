@@ -22,15 +22,15 @@ const experiences = [
 ];
 
 const skills = [
-  { name: "PHP / Laravel", level: 95, icon: Code2 },
-  { name: "JavaScript / Node.js", level: 90, icon: Zap },
-  { name: "MySQL / Redis", level: 88, icon: Database },
-  { name: "API Integration", level: 92, icon: Server },
+  { name: "PHP / Laravel", icon: Code2 },
+  { name: "JavaScript / Node.js", icon: Zap },
+  { name: "MySQL / Redis", icon: Database },
+  { name: "API Integration", icon: Server },
 ];
 
 export function Experience() {
   return (
-    <section id="experience" className="py-20 bg-gradient-to-b from-background to-space-blue/20">
+    <section id="experience" className="min-h-screen flex items-center py-20 bg-gradient-to-b from-background to-space-blue/20">
       <div className="container px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-4">
@@ -69,18 +69,9 @@ export function Experience() {
                 const Icon = skill.icon;
                 return (
                   <div key={skill.name} className="glassmorphism p-6 rounded-lg hover:glow-purple transition-all duration-300">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <Icon className="w-5 h-5 text-primary" />
-                        <span className="font-medium">{skill.name}</span>
-                      </div>
-                      <span className="text-sm font-orbitron text-primary">{skill.level}%</span>
-                    </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-1000 ease-out"
-                        style={{ width: `${skill.level}%` }}
-                      />
+                    <div className="flex items-center gap-3">
+                      <Icon className="w-5 h-5 text-primary" />
+                      <span className="font-medium">{skill.name}</span>
                     </div>
                   </div>
                 );

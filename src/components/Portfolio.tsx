@@ -48,7 +48,7 @@ const projects = [
 
 export function Portfolio() {
   return (
-    <section id="portfolio" className="py-20 bg-gradient-to-b from-space-blue/20 to-background">
+    <section id="portfolio" className="min-h-screen flex items-center py-20 bg-gradient-to-b from-space-blue/20 to-background">
       <div className="container px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-4">
