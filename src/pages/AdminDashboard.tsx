@@ -11,6 +11,8 @@ import SkillsManager from '@/components/SkillsManager';
 import TechnologiesManager from '@/components/TechnologiesManager';
 import ExperienceManager from '@/components/ExperienceManager';
 import HireRequestsManager from '@/components/HireRequestsManager';
+import AboutManager from '@/components/AboutManager';
+import HeroManager from '@/components/HeroManager';
 import { api } from '@/lib/api';
 
 // Portfolio List Component
@@ -225,8 +227,10 @@ export default function AdminDashboard() {
         </div>
 
         {/* Management Tabs */}
-        <Tabs defaultValue="portfolio" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+        <Tabs defaultValue="about" className="w-full">
+          <TabsList className="grid w-full grid-cols-8">
+            <TabsTrigger value="hero">Hero</TabsTrigger>
+            <TabsTrigger value="about">About Me</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
             <TabsTrigger value="experience">Experience</TabsTrigger>
             <TabsTrigger value="skills">Skills</TabsTrigger>
@@ -234,6 +238,14 @@ export default function AdminDashboard() {
             <TabsTrigger value="contacts">Contacts</TabsTrigger>
             <TabsTrigger value="hire-requests">Hire Requests</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="hero" className="space-y-4">
+            <HeroManager />
+          </TabsContent>
+
+          <TabsContent value="about" className="space-y-4">
+            <AboutManager />
+          </TabsContent>
 
           <TabsContent value="portfolio" className="space-y-4">
             <PortfolioList />

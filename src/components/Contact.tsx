@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Github, Linkedin, Youtube, Send as TelegramIcon, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
+import { api } from "@/lib/api";
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -11,6 +12,25 @@ export function Contact() {
     email: "",
     message: "",
   });
+  const [contacts, setContacts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadContacts = async () => {
+      try {
+        const result = await api.getContactV2();
+        if (result.success) {
+          setContacts(result.data.slice(0, 4));
+        }
+      } catch (error) {
+        console.error('Error loading contacts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadContacts();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,12 +38,7 @@ export function Contact() {
     setFormData({ name: "", email: "", message: "" });
   };
 
-  const socialLinks = [
-    { icon: Github, href: "#", label: "GitHub" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Youtube, href: "#", label: "YouTube" },
-    { icon: TelegramIcon, href: "#", label: "Telegram" },
-  ];
+
 
   return (
     <section id="contact" className="min-h-screen flex items-center py-20 bg-gradient-to-b from-space-blue/20 to-background relative overflow-hidden">
@@ -114,19 +129,28 @@ export function Contact() {
                   Feel free to reach out through any of these platforms. I'm always open to discussing new projects and opportunities.
                 </p>
                 <div className="space-y-3">
-                  {socialLinks.map((social) => {
-                    const Icon = social.icon;
-                    return (
-                      <a
-                        key={social.label}
-                        href={social.href}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-background/50 hover:bg-primary/10 border border-border hover:border-primary/50 transition-all group"
-                      >
-                        <Icon className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
-                        <span className="text-sm font-medium">{social.label}</span>
-                      </a>
-                    );
-                  })}
+                  {loading ? (
+                    <div className="text-center py-4">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                    </div>
+                  ) : (
+                    contacts.map((contact, index) => {
+                      const icons = [Github, Linkedin, Youtube, TelegramIcon];
+                      const Icon = icons[index] || Mail;
+                      return (
+                        <a
+                          key={contact.platform}
+                          href={contact.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 p-3 rounded-lg bg-background/50 hover:bg-primary/10 border border-border hover:border-primary/50 transition-all group"
+                        >
+                          <Icon className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
+                          <span className="text-sm font-medium">{contact.platform}</span>
+                        </a>
+                      );
+                    })
+                  )}
                 </div>
               </div>
 

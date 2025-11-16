@@ -175,6 +175,64 @@ class ApiService {
       body: JSON.stringify({ status }),
     });
   }
+
+  // API V2 Skills
+  async getSkillsV2() {
+    return this.request('-v2/skills');
+  }
+
+  // API V2 Portfolio
+  async getPortfolioV2() {
+    return this.request('-v2/portfolio');
+  }
+
+  async getPortfolioDetailV2(id: number) {
+    return this.request(`-v2/portfolio/${id}`);
+  }
+
+  // API V2 Experience
+  async getExperienceV2() {
+    return this.request('-v2/experience');
+  }
+
+  // API V2 Contact
+  async getContactV2() {
+    return this.request('-v2/contact');
+  }
+
+  // API V2 Hero
+  async getHeroV2() {
+    return this.request('-v2/hero');
+  }
+
+  // API V2 About
+  async getAboutV2() {
+    return this.request('-v2/about');
+  }
+
+  // About Me endpoints
+  async getAbout() {
+    return this.request('/about');
+  }
+
+  async saveAbout(aboutData: any) {
+    return this.request('/about', {
+      method: 'POST',
+      body: JSON.stringify(aboutData),
+    });
+  }
+
+  // Hero Section endpoints
+  async getHero() {
+    return this.request('/hero');
+  }
+
+  async saveHero(heroData: any) {
+    return this.request('/hero', {
+      method: 'POST',
+      body: JSON.stringify(heroData),
+    });
+  }
 }
 
 export const api = new ApiService();

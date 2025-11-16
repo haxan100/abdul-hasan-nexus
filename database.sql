@@ -182,7 +182,36 @@ CREATE TABLE hire_requests (
     status ENUM('new', 'contacted', 'in_discussion', 'accepted', 'declined') DEFAULT 'new',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);PI development, testing, and documentation', 'Daily'),
+);
+
+-- About Me table (for About section)
+CREATE TABLE about_me (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    subtitle TEXT,
+    bio TEXT,
+    focus_areas TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Hero section table (for Hero/Home section)
+CREATE TABLE hero_section (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Insert default about me data
+INSERT INTO about_me (name, title, subtitle, bio, focus_areas) VALUES
+('Abdul Hasan', 'Full-Stack Developer', 'Turning ideas into scalable, beautiful, and efficient systems.', 'My name is Abdul Hasan, a graduate from S1 STIKOM CKI Cengkareng (Akreditasi B). With over 5 years of experience as a Full-Stack Developer, I specialize in building robust web applications and seamless integrations.', 'I focus on developing e-commerce systems, business automation, and cross-platform integrations that drive business growth and efficiency.');
+
+-- Insert default hero section data
+INSERT INTO hero_section (name, description) VALUES
+('Abdul Hasan', 'Hi, I\'m a passionate Full-Stack Developer specializing in web applications, API integrations, and creative tech solutions.');PI development, testing, and documentation', 'Daily'),
 ('Material-UI', 'UI Library', 'React components implementing Google Material Design', 'Weekly'),
 ('Jest', 'Testing Framework', 'JavaScript testing framework with snapshot testing', 'Weekly'),
 ('Git', 'Version Control', 'Distributed version control system for tracking changes', 'Daily'),

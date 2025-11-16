@@ -2,26 +2,50 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { ArrowRight } from "lucide-react";
 import { ProjectModal } from "./ProjectModal";
+import { api } from "@/lib/api";
 
-const projects = [
-  { id: 1, title: "E-Commerce Platform", tech: "Laravel + Vue.js", image: "/placeholder.svg", description: "Full-featured e-commerce platform with payment integration and admin dashboard." },
-  { id: 2, title: "API Integration Hub", tech: "Node.js + Redis", image: "/placeholder.svg", description: "Centralized API management system with caching and rate limiting." },
-  { id: 3, title: "Automation System", tech: "PHP + RabbitMQ", image: "/placeholder.svg", description: "Automated workflow system for business process optimization." },
-  { id: 4, title: "CMS Dashboard", tech: "React + MySQL", image: "/placeholder.svg", description: "Content management system with real-time editing capabilities." },
-  { id: 5, title: "Payment Gateway", tech: "CodeIgniter", image: "/placeholder.svg", description: "Secure payment processing system with multiple gateway support." },
-  { id: 6, title: "Real-time Chat", tech: "WebSocket + Redis", image: "/placeholder.svg", description: "Real-time messaging application with file sharing and group chat." },
-  { id: 7, title: "Analytics Dashboard", tech: "React + PostgreSQL", image: "/placeholder.svg", description: "Data visualization dashboard with interactive charts and reports." },
-  { id: 8, title: "Microservices API", tech: "Node.js + Docker", image: "/placeholder.svg", description: "Scalable microservices architecture with containerized deployment." },
-  { id: 9, title: "Inventory System", tech: "Laravel + MySQL", image: "/placeholder.svg", description: "Inventory management system with barcode scanning and reporting." },
-];
+
 
 export function Hero() {
   const [mounted, setMounted] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [heroData, setHeroData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    
+    const loadData = async () => {
+      try {
+        const [portfolioResult, heroResult] = await Promise.all([
+          api.getPortfolioV2(),
+          api.getHeroV2()
+        ]);
+        
+        if (portfolioResult.success) {
+          const formattedProjects = portfolioResult.data.map((project: any) => ({
+            id: project.id,
+            title: project.title,
+            tech: project.tech && project.tech.length > 0 ? project.tech.join(' + ') : 'Web Development',
+            image: project.cover_image || '/placeholder.svg',
+            description: project.description
+          }));
+          setProjects(formattedProjects.slice(0, 9));
+        }
+        
+        if (heroResult.success) {
+          setHeroData(heroResult.data);
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
   const scrollToSection = (id: string) => {
@@ -54,7 +78,7 @@ export function Hero() {
             </div>
 
             {/* Orbiting Projects - Fixed Distance */}
-            {mounted && projects.map((project, index) => (
+            {mounted && !loading && projects.map((project, index) => (
               <div
                 key={project.id}
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -82,11 +106,9 @@ export function Hero() {
           {/* Hero Text */}
           <div className="space-y-6 max-w-3xl">
             <h1 className="text-5xl md:text-7xl font-orbitron font-bold">
-              <span className="text-gradient">Abdul Hasan</span>
+              <span className="text-gradient">{heroData?.name || 'Abdul Hasan'}</span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground">
-              Hi, I'm a passionate <span className="text-primary font-semibold">Full-Stack Developer</span> specializing in web applications, API integrations, and creative tech solutions.
-            </p>
+            <div className="text-xl md:text-2xl text-muted-foreground" dangerouslySetInnerHTML={{ __html: heroData?.description || "Hi, I'm a passionate <span class='text-primary font-semibold'>Full-Stack Developer</span> specializing in web applications, API integrations, and creative tech solutions." }} />
             <div className="flex flex-wrap gap-4 justify-center pt-4">
               <Button
                 size="lg"

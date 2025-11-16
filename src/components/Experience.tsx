@@ -1,34 +1,38 @@
 import { Briefcase, Code2, Database, Server, Zap } from "lucide-react";
+import { useState, useEffect } from "react";
+import { api } from "@/lib/api";
 
-const experiences = [
-  {
-    year: "2020 - Present",
-    position: "Senior Full-Stack Developer",
-    company: "Tech Solutions Inc.",
-    description: "Leading development of enterprise applications and API integrations",
-  },
-  {
-    year: "2018 - 2020",
-    position: "Full-Stack Developer",
-    company: "Digital Innovations",
-    description: "Developed e-commerce platforms and business automation systems",
-  },
-  {
-    year: "2017 - 2018",
-    position: "Backend Developer",
-    company: "StartUp Tech",
-    description: "Built scalable backend services and database architectures",
-  },
-];
 
-const skills = [
-  { name: "PHP / Laravel", icon: Code2 },
-  { name: "JavaScript / Node.js", icon: Zap },
-  { name: "MySQL / Redis", icon: Database },
-  { name: "API Integration", icon: Server },
-];
 
 export function Experience() {
+  const [experiences, setExperiences] = useState<any[]>([]);
+  const [skills, setSkills] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [expResult, skillsResult] = await Promise.all([
+          api.getExperienceV2(),
+          api.getSkillsV2()
+        ]);
+        
+        if (expResult.success) {
+          setExperiences(expResult.data);
+        }
+        
+        if (skillsResult.success) {
+          setSkills(skillsResult.data);
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
   return (
     <section id="experience" className="min-h-screen flex items-center py-20 bg-gradient-to-b from-background to-space-blue/20">
       <div className="container px-4">
@@ -45,17 +49,23 @@ export function Experience() {
               <Briefcase className="w-6 h-6 text-primary" />
               Work Experience
             </h3>
-            {experiences.map((exp, index) => (
-              <div key={index} className="relative pl-8 pb-8 border-l-2 border-primary/30 last:pb-0">
-                <div className="absolute -left-2 top-0 w-4 h-4 rounded-full bg-gradient-to-br from-primary to-secondary animate-pulse" />
-                <div className="glassmorphism p-6 rounded-lg hover:glow-cyan transition-all duration-300">
-                  <div className="text-sm font-orbitron text-primary mb-2">{exp.year}</div>
-                  <h4 className="text-lg font-bold mb-1">{exp.position}</h4>
-                  <div className="text-sm text-secondary mb-2">{exp.company}</div>
-                  <p className="text-sm text-muted-foreground">{exp.description}</p>
-                </div>
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
               </div>
-            ))}
+            ) : (
+              experiences.map((exp, index) => (
+                <div key={index} className="relative pl-8 pb-8 border-l-2 border-primary/30 last:pb-0">
+                  <div className="absolute -left-2 top-0 w-4 h-4 rounded-full bg-gradient-to-br from-primary to-secondary animate-pulse" />
+                  <div className="glassmorphism p-6 rounded-lg hover:glow-cyan transition-all duration-300">
+                    <div className="text-sm font-orbitron text-primary mb-2">{exp.duration}</div>
+                    <h4 className="text-lg font-bold mb-1">{exp.position}</h4>
+                    <div className="text-sm text-secondary mb-2">{exp.company}</div>
+                    <p className="text-sm text-muted-foreground">{exp.description}</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Skills */}
@@ -65,17 +75,24 @@ export function Experience() {
               Technical Skills
             </h3>
             <div className="space-y-6">
-              {skills.map((skill) => {
-                const Icon = skill.icon;
-                return (
-                  <div key={skill.name} className="glassmorphism p-6 rounded-lg hover:glow-purple transition-all duration-300">
-                    <div className="flex items-center gap-3">
-                      <Icon className="w-5 h-5 text-primary" />
-                      <span className="font-medium">{skill.name}</span>
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                </div>
+              ) : (
+                skills.slice(0, 4).map((skill, index) => {
+                  const icons = [Code2, Zap, Database, Server];
+                  const Icon = icons[index] || Code2;
+                  return (
+                    <div key={skill} className="glassmorphism p-6 rounded-lg hover:glow-purple transition-all duration-300">
+                      <div className="flex items-center gap-3">
+                        <Icon className="w-5 h-5 text-primary" />
+                        <span className="font-medium">{skill}</span>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
 
             {/* Additional Skills Tags */}

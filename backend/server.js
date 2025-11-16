@@ -489,6 +489,330 @@ app.put('/api/hire-requests/:id/status', async (req, res) => {
   }
 });
 
+// ===== API V2 FOR FRONTEND CONSUMPTION =====
+// Skills API V2
+app.get('/api-v2/skills', async (req, res) => {
+  try {
+    const [rows] = await pool.execute('SELECT name FROM skills ORDER BY level DESC');
+    const skills = rows.map(row => row.name);
+    
+    res.json({
+      success: true,
+      data: skills,
+      total: skills.length,
+      message: 'Skills list retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Error fetching skills:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch skills' });
+  }
+});
+
+// Portfolio API V2
+app.get('/api-v2/portfolio', async (req, res) => {
+  try {
+    const [rows] = await pool.execute('SELECT id, title, description, cover_image, demo_url, technologies FROM portfolios WHERE status = "active" ORDER BY priority ASC');
+    
+    const portfolios = rows.map(row => {
+      let tech = [];
+      try {
+        tech = row.technologies ? JSON.parse(row.technologies) : [];
+      } catch (e) {
+        console.error('Invalid JSON in technologies field:', row.technologies);
+        tech = [];
+      }
+      
+      return {
+        id: row.id,
+        title: row.title,
+        description: row.description,
+        cover_image: row.cover_image,
+        demo_url: row.demo_url,
+        tech: tech,
+        slug: row.title ? row.title.toLowerCase().replace(/\s+/g, '-') : '',
+        images: [{ url: row.cover_image || '/placeholder.svg', caption: row.title }]
+      };
+    });
+    
+    res.json({
+      success: true,
+      data: portfolios,
+      total: portfolios.length,
+      message: 'Portfolio items retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Error fetching portfolio:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch portfolio' });
+  }
+});
+
+// Portfolio Detail API V2
+app.get('/api-v2/portfolio/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [portfolioRows] = await pool.execute('SELECT * FROM portfolios WHERE id = ?', [id]);
+    
+    if (portfolioRows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Portfolio not found' });
+    }
+    
+    const [galleryRows] = await pool.execute(
+      'SELECT image_url, image_caption FROM portfolio_gallery WHERE portfolio_id = ? ORDER BY sort_order',
+      [id]
+    );
+    
+    const portfolio = portfolioRows[0];
+    console.log('Raw portfolio data:', {
+      id: portfolio.id,
+      technologies: portfolio.technologies,
+      features: portfolio.features
+    });
+    
+    let technologies = [];
+    let skills = [];
+    let features = [];
+    
+    try {
+      // Handle data that's already parsed as array or needs JSON parsing
+      if (portfolio.technologies) {
+        if (Array.isArray(portfolio.technologies)) {
+          technologies = portfolio.technologies;
+        } else if (typeof portfolio.technologies === 'string') {
+          const decodedTech = portfolio.technologies.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+          technologies = JSON.parse(decodedTech);
+        }
+      }
+      
+      if (portfolio.skills) {
+        if (Array.isArray(portfolio.skills)) {
+          skills = portfolio.skills;
+        } else if (typeof portfolio.skills === 'string') {
+          const decodedSkills = portfolio.skills.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+          skills = JSON.parse(decodedSkills);
+        }
+      }
+      
+      if (portfolio.features) {
+        if (Array.isArray(portfolio.features)) {
+          features = portfolio.features;
+        } else if (typeof portfolio.features === 'string') {
+          const decodedFeatures = portfolio.features.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+          features = JSON.parse(decodedFeatures);
+        }
+      }
+      
+      console.log('Parsed data:', {
+        technologies,
+        features
+      });
+    } catch (e) {
+      console.error('Invalid JSON in portfolio fields:', e);
+      console.error('Raw technologies:', portfolio.technologies);
+      console.error('Raw features:', portfolio.features);
+    }
+    
+    const result = {
+      id: portfolio.id,
+      title: portfolio.title,
+      subtitle: portfolio.subtitle,
+      caption: portfolio.caption,
+      description: portfolio.description,
+      cover_image: portfolio.cover_image,
+      cover_caption: portfolio.cover_caption,
+      background_image: portfolio.background_image,
+      background_caption: portfolio.background_caption,
+      gallery_images: galleryRows.map(row => ({
+        url: row.image_url,
+        caption: row.image_caption || ''
+      })),
+      technologies: technologies,
+      skills: skills,
+      features: features,
+      live_url: portfolio.live_url,
+      github_url: portfolio.github_url,
+      demo_url: portfolio.demo_url,
+      category: portfolio.category,
+      duration: portfolio.duration,
+      client: portfolio.client,
+      project_type: portfolio.project_type,
+      status: portfolio.status,
+      featured: portfolio.featured,
+      priority: portfolio.priority,
+      completion_date: portfolio.completion_date,
+      created_at: portfolio.created_at,
+      updated_at: portfolio.updated_at
+    };
+    
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Error fetching portfolio detail:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch portfolio detail' });
+  }
+});
+
+// Experience API V2
+app.get('/api-v2/experience', async (req, res) => {
+  try {
+    const [rows] = await pool.execute('SELECT company, position, duration, description FROM experiences ORDER BY start_date DESC');
+    
+    res.json({
+      success: true,
+      data: rows,
+      total: rows.length,
+      message: 'Experience retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Error fetching experience:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch experience' });
+  }
+});
+
+// Contact API V2
+app.get('/api-v2/contact', async (req, res) => {
+  try {
+    const [rows] = await pool.execute('SELECT platform, url, username FROM contacts ORDER BY id');
+    
+    res.json({
+      success: true,
+      data: rows,
+      total: rows.length,
+      message: 'Contact links retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Error fetching contacts:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch contacts' });
+  }
+});
+
+// Hero API V2
+app.get('/api-v2/hero', async (req, res) => {
+  try {
+    const [rows] = await pool.execute('SELECT * FROM hero_section ORDER BY id DESC LIMIT 1');
+    
+    res.json({
+      success: true,
+      data: rows[0] || { name: 'Abdul Hasan', description: 'Hi, I\'m a passionate Full-Stack Developer specializing in web applications, API integrations, and creative tech solutions.' },
+      message: 'Hero section retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Error fetching hero:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch hero' });
+  }
+});
+
+// About Me API V2
+app.get('/api-v2/about', async (req, res) => {
+  try {
+    const [rows] = await pool.execute('SELECT * FROM about_me ORDER BY id DESC LIMIT 1');
+    
+    res.json({
+      success: true,
+      data: rows[0] || { name: 'Abdul Hasan', title: 'Full-Stack Developer', subtitle: 'Turning ideas into scalable, beautiful, and efficient systems.', bio: 'My name is Abdul Hasan, a graduate from S1 STIKOM CKI Cengkareng (Akreditasi B). With over 5 years of experience as a Full-Stack Developer, I specialize in building robust web applications and seamless integrations.', focus_areas: 'I focus on developing e-commerce systems, business automation, and cross-platform integrations that drive business growth and efficiency.' },
+      message: 'About me retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Error fetching about:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch about' });
+  }
+});
+
+// About Me endpoints
+app.get('/api/about', async (req, res) => {
+  try {
+    const [rows] = await pool.execute('SELECT * FROM about_me ORDER BY id DESC LIMIT 1');
+    
+    res.json({
+      success: true,
+      data: rows[0] || { 
+        name: 'Abdul Hasan', 
+        title: 'Full-Stack Developer', 
+        subtitle: 'Turning ideas into scalable, beautiful, and efficient systems.',
+        bio: 'My name is Abdul Hasan, a graduate from S1 STIKOM CKI Cengkareng (Akreditasi B). With over 5 years of experience as a Full-Stack Developer, I specialize in building robust web applications and seamless integrations.',
+        focus_areas: 'I focus on developing e-commerce systems, business automation, and cross-platform integrations that drive business growth and efficiency.'
+      },
+      message: 'About me retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Error fetching about me:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch about me' });
+  }
+});
+
+app.post('/api/about', async (req, res) => {
+  try {
+    const { name, title, subtitle, bio, focus_areas } = req.body;
+    
+    // Check if record exists
+    const [existing] = await pool.execute('SELECT id FROM about_me LIMIT 1');
+    
+    if (existing.length > 0) {
+      // Update existing record
+      const [result] = await pool.execute(
+        'UPDATE about_me SET name = ?, title = ?, subtitle = ?, bio = ?, focus_areas = ?, updated_at = NOW() WHERE id = ?',
+        [name, title, subtitle, bio, focus_areas, existing[0].id]
+      );
+      res.json({ success: true, data: { id: existing[0].id } });
+    } else {
+      // Insert new record
+      const [result] = await pool.execute(
+        'INSERT INTO about_me (name, title, subtitle, bio, focus_areas, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
+        [name, title, subtitle, bio, focus_areas]
+      );
+      res.json({ success: true, data: { id: result.insertId } });
+    }
+  } catch (error) {
+    console.error('Error saving about me:', error);
+    res.status(500).json({ success: false, error: 'Failed to save about me' });
+  }
+});
+
+// Hero Section endpoints
+app.get('/api/hero', async (req, res) => {
+  try {
+    const [rows] = await pool.execute('SELECT * FROM hero_section ORDER BY id DESC LIMIT 1');
+    
+    res.json({
+      success: true,
+      data: rows[0] || { 
+        name: 'Abdul Hasan', 
+        description: 'Hi, I\'m a passionate Full-Stack Developer specializing in web applications, API integrations, and creative tech solutions.'
+      },
+      message: 'Hero section retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Error fetching hero section:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch hero section' });
+  }
+});
+
+app.post('/api/hero', async (req, res) => {
+  try {
+    const { name, description } = req.body;
+    
+    // Check if record exists
+    const [existing] = await pool.execute('SELECT id FROM hero_section LIMIT 1');
+    
+    if (existing.length > 0) {
+      // Update existing record
+      const [result] = await pool.execute(
+        'UPDATE hero_section SET name = ?, description = ?, updated_at = NOW() WHERE id = ?',
+        [name, description, existing[0].id]
+      );
+      res.json({ success: true, data: { id: existing[0].id } });
+    } else {
+      // Insert new record
+      const [result] = await pool.execute(
+        'INSERT INTO hero_section (name, description, created_at, updated_at) VALUES (?, ?, NOW(), NOW())',
+        [name, description]
+      );
+      res.json({ success: true, data: { id: result.insertId } });
+    }
+  } catch (error) {
+    console.error('Error saving hero section:', error);
+    res.status(500).json({ success: false, error: 'Failed to save hero section' });
+  }
+});
+
 // Image processing API endpoint
 app.get('/api/images/rounded/:filename', (req, res) => {
   try {

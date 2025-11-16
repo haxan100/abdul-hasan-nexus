@@ -3,8 +3,6 @@ import { api } from "@/lib/api";
 
 export function About() {
   const [displayedText, setDisplayedText] = useState("");
-  const [skills, setSkills] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
   const fullText = "Turning ideas into scalable, beautiful, and efficient systems.";
 
   useEffect(() => {
@@ -21,22 +19,7 @@ export function About() {
     return () => clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    const loadSkills = async () => {
-      try {
-        const result = await api.getTechnicalSkills();
-        if (result.success) {
-          setSkills(result.data);
-        }
-      } catch (error) {
-        console.error('Error loading skills:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    loadSkills();
-  }, []);
 
   return (
     <section id="about" className="min-h-screen flex items-center py-20 bg-gradient-to-b from-background to-space-blue/20">
@@ -64,24 +47,6 @@ export function About() {
                 With over <span className="text-primary font-semibold">5 years of experience</span> as a Full-Stack Developer,
                 I specialize in building robust web applications and seamless integrations.
               </p>
-
-              <div className="pt-4">
-                <h3 className="text-xl font-orbitron font-bold text-foreground mb-3">Technical Skills</h3>
-                {loading ? (
-                  <div className="text-center py-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                  </div>
-                ) : (
-                  <div className="grid md:grid-cols-2 gap-3">
-                    {skills.map((skill, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse" />
-                        <span className="text-foreground">{skill}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
 
               <div className="pt-4">
                 <h3 className="text-xl font-orbitron font-bold text-foreground mb-3">Focus Areas</h3>
