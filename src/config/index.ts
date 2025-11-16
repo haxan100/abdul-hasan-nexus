@@ -2,17 +2,17 @@
 export const config = {
   // Database Configuration
   database: {
-    host: process.env.VITE_DB_HOST || 'localhost',
-    port: process.env.VITE_DB_PORT || 3306,
-    name: process.env.VITE_DB_NAME || 'feporto_db',
-    user: process.env.VITE_DB_USER || 'root',
-    password: process.env.VITE_DB_PASSWORD || '',
+    host: import.meta.env.VITE_DB_HOST || 'localhost',
+    port: import.meta.env.VITE_DB_PORT || 3306,
+    name: import.meta.env.VITE_DB_NAME || 'feporto_db',
+    user: import.meta.env.VITE_DB_USER || 'root',
+    password: import.meta.env.VITE_DB_PASSWORD || '',
     type: 'mysql' as const
   },
 
   // API Configuration
   api: {
-    baseUrl: process.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
     timeout: 10000,
     endpoints: {
       portfolio: '/portfolio',
