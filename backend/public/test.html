@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Backend Images</title>
+</head>
+<body>
+    <h1>Test Backend Image Serving</h1>
+    
+    <h2>Upload Test Image:</h2>
+    <form action="/api/upload/single" method="post" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Upload</button>
+    </form>
+    
+    <h2>Test Portfolio API:</h2>
+    <button onclick="testAPI()">Get Portfolio 2</button>
+    <div id="result"></div>
+    
+    <script>
+        function testAPI() {
+            fetch('/api/portfolio/2')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                    
+                    // Show images if they exist
+                    if (data.success && data.data) {
+                        const portfolio = data.data;
+                        let html = '<h3>Images:</h3>';
+                        
+                        if (portfolio.cover_image) {
+                            html += `<p>Cover: <img src="${portfolio.cover_image}" style="max-width:200px;"></p>`;
+                        }
+                        
+                        if (portfolio.background_image) {
+                            html += `<p>Background: <img src="${portfolio.background_image}" style="max-width:200px;"></p>`;
+                        }
+                        
+                        if (portfolio.gallery_images && portfolio.gallery_images.length > 0) {
+                            html += '<p>Gallery:</p>';
+                            portfolio.gallery_images.forEach(img => {
+                                html += `<img src="${img.url}" style="max-width:150px; margin:5px;">`;
+                            });
+                        }
+                        
+                        document.getElementById('result').innerHTML += html;
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('result').innerHTML = 'Error: ' + err.message;
+                });
+        }
+    </script>
+</body>
+</html>

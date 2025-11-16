@@ -20,25 +20,44 @@ CREATE TABLE contacts (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Portfolio table
+-- Portfolio table (Enhanced with detailed image management)
 CREATE TABLE portfolios (
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
+    subtitle VARCHAR(255),
     caption TEXT,
     description TEXT,
-    image VARCHAR(255),
-    images JSON,
+    cover_image VARCHAR(255),
+    cover_caption VARCHAR(255),
+    background_image VARCHAR(255),
+    background_caption VARCHAR(255),
     technologies JSON,
+    skills JSON,
     features JSON,
     live_url VARCHAR(255),
     github_url VARCHAR(255),
+    demo_url VARCHAR(255),
     category VARCHAR(100),
     duration VARCHAR(100),
     client VARCHAR(255),
-    status ENUM('Draft', 'Published') DEFAULT 'Draft',
+    project_type ENUM('Web App', 'Mobile App', 'Desktop App', 'API', 'Website', 'Other') DEFAULT 'Web App',
+    status ENUM('Draft', 'Published', 'Archived') DEFAULT 'Draft',
     featured BOOLEAN DEFAULT FALSE,
+    priority INT DEFAULT 0,
+    completion_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Portfolio Gallery Images table
+CREATE TABLE portfolio_gallery (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    portfolio_id INT NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    image_caption TEXT,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (portfolio_id) REFERENCES portfolios(id) ON DELETE CASCADE
 );
 
 -- Work Experience table
@@ -103,11 +122,19 @@ INSERT INTO contacts (platform, url, username, icon, color, description, type, f
 ('Behance', 'https://behance.net/hasanfardous', 'hasanfardous', '/icons/behance.svg', '#1769FF', 'Creative portfolio showcase', 'Portfolio', 300);
 
 -- Insert portfolio data
-INSERT INTO portfolios (title, caption, description, image, technologies, category, featured, status) VALUES
-('E-Commerce Website', 'Modern online shopping platform with React & Node.js', 'A full-stack e-commerce solution featuring user authentication, product catalog, shopping cart, payment integration with Stripe, order management, and admin dashboard. Built with modern technologies and responsive design principles.', '/images/portfolio/ecommerce-thumb.jpg', '["React", "Node.js", "MongoDB", "Stripe"]', 'Web Development', TRUE, 'Published'),
-('Mobile Banking App', 'Secure banking application with biometric authentication', 'Mobile banking application with advanced security features including biometric authentication, transaction history, and real-time notifications.', '/images/portfolio/banking-thumb.jpg', '["React Native", "Firebase", "Redux"]', 'Mobile Development', TRUE, 'Published'),
-('AI Chatbot Dashboard', 'Intelligent customer service bot with analytics', 'AI-powered chatbot with natural language processing, sentiment analysis, and comprehensive analytics dashboard for customer service optimization.', '/images/portfolio/chatbot-thumb.jpg', '["Python", "TensorFlow", "FastAPI", "PostgreSQL"]', 'AI/ML', FALSE, 'Draft'),
-('Real Estate Platform', 'Property listing and management system', 'Comprehensive real estate platform with property listings, virtual tours, mortgage calculator, and agent management system.', '/images/portfolio/realestate-thumb.jpg', '["Vue.js", "Laravel", "MySQL", "Google Maps API"]', 'Web Development', TRUE, 'Published');
+INSERT INTO portfolios (title, subtitle, caption, description, cover_image, cover_caption, background_image, background_caption, technologies, skills, category, project_type, featured, status, live_url, github_url, completion_date, priority) VALUES
+('E-Commerce Website', 'Full-Stack Shopping Platform', 'Modern online shopping platform with React & Node.js', 'A comprehensive e-commerce solution featuring user authentication, product catalog with advanced search and filtering, shopping cart functionality, secure payment integration with Stripe, order management system, and comprehensive admin dashboard. Built with modern technologies following best practices for scalability and performance.', '/uploads/portfolio/ecommerce-cover.jpg', 'Main dashboard showing product catalog and user interface', '/uploads/portfolio/ecommerce-bg.jpg', 'Background showcasing the complete e-commerce ecosystem', '["React", "Node.js", "MongoDB", "Stripe", "Express.js", "JWT"]', '["Frontend Development", "Backend Development", "Database Design", "Payment Integration"]', 'Web Development', 'Web App', TRUE, 'Published', 'https://ecommerce-demo.vercel.app', 'https://github.com/hasanfardous/ecommerce', '2024-01-30', 1),
+('Mobile Banking App', 'Secure Financial Mobile Solution', 'Secure banking application with biometric authentication', 'Advanced mobile banking application featuring biometric authentication, real-time transaction monitoring, account management, fund transfers, bill payments, and comprehensive security measures. Includes push notifications, transaction history, and budget tracking features.', '/uploads/portfolio/banking-cover.jpg', 'Mobile app interface showing secure login and dashboard', '/uploads/portfolio/banking-bg.jpg', 'Banking security and transaction flow visualization', '["React Native", "Firebase", "Redux", "Biometric API", "Push Notifications"]', '["Mobile Development", "Security Implementation", "State Management", "API Integration"]', 'Mobile Development', 'Mobile App', TRUE, 'Published', 'https://banking-app-demo.com', 'https://github.com/hasanfardous/banking-app', '2024-02-28', 2);
+
+-- Insert gallery images
+INSERT INTO portfolio_gallery (portfolio_id, image_url, image_caption, sort_order) VALUES
+(1, '/uploads/portfolio/gallery/ecommerce-1.jpg', 'Product catalog with advanced filtering and search functionality', 1),
+(1, '/uploads/portfolio/gallery/ecommerce-2.jpg', 'Shopping cart and checkout process with Stripe integration', 2),
+(1, '/uploads/portfolio/gallery/ecommerce-3.jpg', 'Admin dashboard for inventory and order management', 3),
+(1, '/uploads/portfolio/gallery/ecommerce-4.jpg', 'User profile and order history interface', 4),
+(2, '/uploads/portfolio/gallery/banking-1.jpg', 'Biometric authentication and secure login process', 1),
+(2, '/uploads/portfolio/gallery/banking-2.jpg', 'Account overview and transaction history', 2),
+(2, '/uploads/portfolio/gallery/banking-3.jpg', 'Fund transfer and bill payment features', 3);
 
 -- Insert experience data
 INSERT INTO experiences (company, position, duration, start_date, location, type, description, technologies, current) VALUES
@@ -127,11 +154,35 @@ INSERT INTO skills (name, category, level, timeline, start_year, description, pr
 ('AWS', 'Cloud Platform', 75, '2+ years', 2022, 'EC2, S3, Lambda, RDS, and serverless architecture implementation', 10);
 
 -- Insert technologies data
-INSERT INTO technologies (name, category, description, usage) VALUES
+INSERT INTO technologies (name, category, description, usage_level) VALUES
 ('VS Code', 'Code Editor', 'Primary development environment with extensive extensions', 'Daily'),
 ('Tailwind CSS', 'CSS Framework', 'Utility-first CSS framework for rapid UI development', 'Daily'),
 ('Figma', 'Design Tool', 'UI/UX design collaboration and prototyping', 'Weekly'),
 ('Postman', 'API Testing', 'API development, testing, and documentation', 'Daily'),
+('Material-UI', 'UI Library', 'React components implementing Google Material Design', 'Weekly'),
+('Jest', 'Testing Framework', 'JavaScript testing framework with snapshot testing', 'Weekly'),
+('Git', 'Version Control', 'Distributed version control system for tracking changes', 'Daily'),
+('GitHub', 'Code Hosting', 'Git repository hosting and collaboration platform', 'Daily'),
+('Vercel', 'Hosting Platform', 'Frontend deployment platform with automatic deployments', 'Weekly'),
+('Netlify', 'Hosting Platform', 'Static site hosting with continuous deployment', 'Monthly');
+
+
+
+-- Hire Requests table for contact us / hiring
+CREATE TABLE hire_requests (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    company VARCHAR(255),
+    position VARCHAR(255),
+    message TEXT,
+    budget VARCHAR(100),
+    timeline VARCHAR(100),
+    contact_method ENUM('email', 'phone', 'whatsapp', 'linkedin') DEFAULT 'email',
+    status ENUM('new', 'contacted', 'in_discussion', 'accepted', 'declined') DEFAULT 'new',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);PI development, testing, and documentation', 'Daily'),
 ('Material-UI', 'UI Library', 'React components implementing Google Material Design', 'Weekly'),
 ('Jest', 'Testing Framework', 'JavaScript testing framework with snapshot testing', 'Weekly'),
 ('Git', 'Version Control', 'Distributed version control system for tracking changes', 'Daily'),

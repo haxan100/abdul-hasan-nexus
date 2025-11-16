@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Image URLs</title>
+</head>
+<body>
+    <h1>Test Image URLs</h1>
+    
+    <h2>Test 1: Direct server URL</h2>
+    <img src="http://localhost:3000/uploads/portfolio/test.jpg" alt="Test 1" style="max-width: 200px;">
+    
+    <h2>Test 2: Static file serving</h2>
+    <img src="http://localhost:3000/uploads/test.jpg" alt="Test 2" style="max-width: 200px;">
+    
+    <h2>Upload a test image first:</h2>
+    <form action="http://localhost:3000/api/upload/single" method="post" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Upload Test Image</button>
+    </form>
+    
+    <script>
+        // Test API endpoint
+        fetch('http://localhost:3000/api/portfolio/2')
+            .then(r => r.json())
+            .then(data => {
+                console.log('Portfolio 2 data:', data);
+                document.body.innerHTML += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            });
+    </script>
+</body>
+</html>

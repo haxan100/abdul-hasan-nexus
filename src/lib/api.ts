@@ -28,6 +28,35 @@ class ApiService {
     }
   }
 
+  // Portfolio endpoints
+  async getPortfolios() {
+    return this.request('/portfolio');
+  }
+
+  async getPortfolioById(id: number) {
+    return this.request(`/portfolio/${id}`);
+  }
+
+  async addPortfolio(portfolioData: any) {
+    return this.request('/portfolio', {
+      method: 'POST',
+      body: JSON.stringify(portfolioData),
+    });
+  }
+
+  async updatePortfolio(id: number, portfolioData: any) {
+    return this.request(`/portfolio/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(portfolioData),
+    });
+  }
+
+  async deletePortfolio(id: number) {
+    return this.request(`/portfolio/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Contact endpoints
   async getContacts() {
     return this.request('/contact');
@@ -100,6 +129,50 @@ class ApiService {
   async deleteTechnology(id: number) {
     return this.request(`/technologies/${id}`, {
       method: 'DELETE',
+    });
+  }
+
+  // Experience endpoints
+  async getExperiences() {
+    return this.request('/experience');
+  }
+
+  async addExperience(experienceData: any) {
+    return this.request('/experience', {
+      method: 'POST',
+      body: JSON.stringify(experienceData),
+    });
+  }
+
+  async updateExperience(id: number, experienceData: any) {
+    return this.request(`/experience/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(experienceData),
+    });
+  }
+
+  async deleteExperience(id: number) {
+    return this.request(`/experience/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Hire Me endpoints
+  async submitHireRequest(hireData: any) {
+    return this.request('/hire-me', {
+      method: 'POST',
+      body: JSON.stringify(hireData),
+    });
+  }
+
+  async getHireRequests() {
+    return this.request('/hire-requests');
+  }
+
+  async updateHireRequestStatus(id: number, status: string) {
+    return this.request(`/hire-requests/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
     });
   }
 }
