@@ -141,6 +141,25 @@ app.get('/api/skills', async (req, res) => {
   }
 });
 
+// Technical Skills for frontend display
+app.get('/api/technical-skills', async (req, res) => {
+  try {
+    const [rows] = await pool.execute('SELECT name FROM skills ORDER BY level DESC LIMIT 4');
+    const skills = rows.map(row => row.name);
+    
+    res.json({
+      success: true,
+      data: skills,
+      message: 'Technical skills retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Error fetching technical skills:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch technical skills' });
+  }
+});
+
+
+
 app.post('/api/skills', async (req, res) => {
   try {
     const { name, category, level, timeline, start_year, description, projects, certifications, icon } = req.body;
@@ -470,8 +489,40 @@ app.put('/api/hire-requests/:id/status', async (req, res) => {
   }
 });
 
+// Image processing API endpoint
+app.get('/api/images/rounded/:filename', (req, res) => {
+  try {
+    const { filename } = req.params;
+    const { size = 300 } = req.query;
+    
+    const imagePath = path.join(__dirname, 'public/uploads/portfolio', filename);
+    
+    if (!fs.existsSync(imagePath)) {
+      return res.status(404).json({ success: false, error: 'Image not found' });
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        original: `/uploads/portfolio/${filename}`,
+        rounded: `/uploads/portfolio/rounded_${filename.replace(/\.[^/.]+$/, '.png')}`,
+        sizes: {
+          thumbnail: `/uploads/portfolio/thumbnail_${filename}`,
+          small: `/uploads/portfolio/small_${filename}`,
+          medium: `/uploads/portfolio/medium_${filename}`,
+          large: `/uploads/portfolio/large_${filename}`
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error getting image info:', error);
+    res.status(500).json({ success: false, error: 'Failed to get image info' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Admin: http://localhost:5173/admin-hasan`);
   console.log(`🔗 API: http://localhost:${PORT}/api`);
+  console.log(`🖼️  Rounded images: http://localhost:${PORT}/api/upload/rounded`);
 });

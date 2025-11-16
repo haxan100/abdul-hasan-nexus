@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import { api } from "@/lib/api";
 
 export function About() {
   const [displayedText, setDisplayedText] = useState("");
+  const [skills, setSkills] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
   const fullText = "Turning ideas into scalable, beautiful, and efficient systems.";
 
   useEffect(() => {
@@ -16,6 +19,23 @@ export function About() {
     }, 50);
 
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const loadSkills = async () => {
+      try {
+        const result = await api.getTechnicalSkills();
+        if (result.success) {
+          setSkills(result.data);
+        }
+      } catch (error) {
+        console.error('Error loading skills:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSkills();
   }, []);
 
   return (
@@ -46,22 +66,21 @@ export function About() {
               </p>
 
               <div className="pt-4">
-                <h3 className="text-xl font-orbitron font-bold text-foreground mb-3">Technical Expertise</h3>
-                <div className="grid md:grid-cols-2 gap-3">
-                  {[
-                    "PHP (CodeIgniter, Laravel)",
-                    "JavaScript & Node.js",
-                    "MySQL & Redis",
-                    "RabbitMQ & API Integration",
-                    "Git, Docker & PM2",
-                    "Linux Server Administration"
-                  ].map((skill) => (
-                    <div key={skill} className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse" />
-                      <span className="text-foreground">{skill}</span>
-                    </div>
-                  ))}
-                </div>
+                <h3 className="text-xl font-orbitron font-bold text-foreground mb-3">Technical Skills</h3>
+                {loading ? (
+                  <div className="text-center py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  </div>
+                ) : (
+                  <div className="grid md:grid-cols-2 gap-3">
+                    {skills.map((skill, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse" />
+                        <span className="text-foreground">{skill}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="pt-4">
